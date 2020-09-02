@@ -1,5 +1,8 @@
 function getData(selectedID) {
-
+    if(! selectedID) {
+        console.log('no id');
+        return;
+    }
     d3.json("samples.json").then((data) => {
         console.log(`get data and build plot for ${selectedID}`)
         console.log(data);
@@ -9,12 +12,25 @@ function getData(selectedID) {
 // function filterSelected(id) {
 //     return id.names == 1;
 // };
-// var filtered = data.samples.filter(selectedID);
-//     console.log(filtered);
+    var filtered = data.samples.filter(row => row.id === selectedID);
+    console.log(filtered);
 
-        var values = data.samples[0].sample_values;
-        var ids = data.samples[0].otu_ids;
-        var labels = data.samples[0].otu_labels;
+        var values = [];
+        var ids = [];
+        var labels = [];
+
+        filtered.forEach(element => {
+            values = element.sample_values;
+            ids = element.otu_ids;
+            labels = element.otu_labels;
+        });
+        // values = filtered.sample_values;
+        // ids = filtered.otu_ids;
+        // labels = filtered.otu_labels
+
+        // var values = data.samples[0].sample_values;
+        // var ids = data.samples[0].otu_ids;
+        // var labels = data.samples[0].otu_labels;
 
         buildPlot(values, ids, labels);
         console.log(values, ids, labels);
@@ -46,22 +62,24 @@ function buildPlot(values, ids, labels) {
     // var topTen = top.names.slice(0,10);
     // console.log(topTen);
     var trace1 = {
-        x: ids,
-        y: values,
+        x: values.slice(0,10).reverse(),
+        y: `OTU ${ids}`.slice(0,10),
         type: "bar",
         text: labels,
-
+        orientation: "h",
+       
     };
   
-    var data = [trace1];
+    var data1 = [trace1];
 
-    var layout = {
+    var layout1 = {
         title: "Sample Values by IDs",
-        xaxis: { title: "IDs" },
-        yaxis: { title: "Sample Values" },
+        xaxis: { title: "Sample Values"},
+        yaxis: { title: "IDs", side: "left" },
+
     };
  
-    Plotly.newPlot("bar", data, layout);
+    Plotly.newPlot("bar", data1, layout1);
 };
 // Bubble chart
 function buildBubble(values,ids,labels) {
@@ -76,9 +94,9 @@ function buildBubble(values,ids,labels) {
             }
           };
           
-          var data1 = [trace2];
+          var data2 = [trace2];
           
-          var layout1 = {
+          var layout = {
             title: 'Biodiversity Size and Color',
             showlegend: false,
             height: 600,
@@ -86,7 +104,7 @@ function buildBubble(values,ids,labels) {
             xaxis: { title: "IDs" },
           };
           
-          Plotly.newPlot('bubble', data1, layout1);
+          Plotly.newPlot('bubble', data2, layout);
 
     }
 
