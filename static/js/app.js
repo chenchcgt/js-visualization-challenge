@@ -34,7 +34,7 @@ function getData(selectedID) {
 
         buildPlot(values, ids, labels);
         console.log(values, ids, labels);
-        buildTable(values,ids,labels);
+        // buildTable(values,ids,labels);
         buildBubble(values,ids,labels);
 
     });
@@ -42,19 +42,53 @@ function getData(selectedID) {
 // get Data for initial page load
 getData(940);
 
-// not updating anything...
 
-function buildTable(values,ids,labels) {
-    var table = d3.select("#sample-metadata");
+
+// function buildTable(values,ids,labels) {
+//     var table = d3.select("#summary-table");
+//     var tbody = table.select("tbody");
+//     var trow;
+//     for (var j=0; j<10; j++) {
+//         trow = tbody.append("tr");
+//         trow.append("td").text(ids[j]);
+//         trow.append("td").text(labels[j]);
+//         trow.append("td").text(values[j]);
+//     }
+// }
+
+function buildTable(selectedID) {
+   
+    d3.json("samples.json").then((data1) => {
+        console.log(`get data and build table for ${selectedID}`)
+        // console.log(data);
+
+    var filtered1 = data1.metadata.filter(row => row.id === Number(selectedID));
+    console.log(filtered1);
+
+    var table = d3.select("#summary-table");
     var tbody = table.select("tbody");
-    var trow;
-    for (var j=0; j<10; j++) {
-        trow = tbody.append("tr");
-        trow.append("td").text(ids[j]);
-        trow.append("td").text(labels[j]);
-        trow.append("td").text(values[j]);
-    }
-}
+    var row = tbody.append("tr");
+ 
+    Object.entries(filtered1).forEach(function([key,value]){
+        console.log(key,value);
+        var cell = row.append("td");
+        cell.text(key);
+        cell.text(value);
+
+    });
+});
+};
+
+//     function buildTable(values,ids,labels) {
+//     var tbody = d3.select("tbody");
+//     var row = tbody.append("tr");
+
+//     Object.entries(values,ids,labels).forEach(function([key,value]){
+//         console.log(key,value);
+//         var cell = row.append("td");
+//         cell.text(value);
+//     });
+// };
 
 // Bar chart
 function buildPlot(values, ids, labels) {
@@ -136,5 +170,6 @@ function optionChanged(selectedID) {
     console.log(`option changed for ${selectedID}`)
 
     // get data for selected option
-    getData(selectedID)
+    getData(selectedID);
+    buildTable(selectedID);
 }
