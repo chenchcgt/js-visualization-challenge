@@ -32,8 +32,6 @@ function getData(selectedID) {
 // get Data for initial page load
 getData();
 
-
-
 // function to filter metadata from dataset and display demographic info
 
 function buildTable(selectedID) {
@@ -60,8 +58,6 @@ function buildTable(selectedID) {
     });
 
 };
-
-
 
 // Bar chart
 function buildPlot(values, ids, labels) {
