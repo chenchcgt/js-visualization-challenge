@@ -40,7 +40,7 @@ function getData(selectedID) {
     });
 };
 // get Data for initial page load
-getData(940);
+getData();
 
 
 
@@ -57,7 +57,8 @@ getData(940);
 // }
 
 function buildTable(selectedID) {
-   
+          
+    
     d3.json("samples.json").then((data1) => {
         console.log(`get data and build table for ${selectedID}`)
         // console.log(data);
@@ -65,19 +66,29 @@ function buildTable(selectedID) {
     var filtered1 = data1.metadata.filter(row => row.id === Number(selectedID));
     console.log(filtered1);
 
-    var table = d3.select("#summary-table");
-    var tbody = table.select("tbody");
-    var row = tbody.append("tr");
- 
-    Object.entries(filtered1).forEach(function([key,value]){
-        console.log(key,value);
-        var cell = row.append("td");
-        cell.text(key);
-        cell.text(value);
-
+    var table;
+    // table.html("");
+    table = d3.select("#summary-table");
+    // var tbody = table.select("tbody");
+    // var row = tbody.append("tr");
+    
+    // Object.entries(filtered1[0]).forEach(function([key,value]){
+    //     console.log(key,value);
+    //     var cell = row.append("td").text(filtered1[0]);
+    //     cell.text(key);
+    //     cell.text(value);
+        table.html("");
+        Object.entries(filtered1[0]).forEach((key) => {
+            table.append("tr").text(key[0] + ":" + key [1] + "\n");
+            
+            });
+           
     });
-});
-};
+    
+    };
+    
+
+
 
 //     function buildTable(values,ids,labels) {
 //     var tbody = d3.select("tbody");
@@ -95,9 +106,10 @@ function buildPlot(values, ids, labels) {
     // .slice() 15.2..6
     // var topTen = top.names.slice(0,10);
     // console.log(topTen);
+    var yticks = ids.slice(0, 10).map(otuID => `OTU ${otuID}`).reverse();
     var trace1 = {
         x: values.slice(0,10).reverse(),
-        y: `OTU ${ids}`.slice(0,10),
+        y: yticks,
         type: "bar",
         text: labels,
         orientation: "h",
@@ -143,7 +155,6 @@ function buildBubble(values,ids,labels) {
     }
 
 
-
 // update drop down menu
 function updateDropDown() {
     d3.json("samples.json").then((data) => {
@@ -168,7 +179,7 @@ updateDropDown();
 function optionChanged(selectedID) {
     // run this code whendropdown changes
     console.log(`option changed for ${selectedID}`)
-
+    
     // get data for selected option
     getData(selectedID);
     buildTable(selectedID);
