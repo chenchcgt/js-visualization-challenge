@@ -1,5 +1,6 @@
+// get data for plotting graphs based on selected dropdown value
 function getData(selectedID) {
-    if(! selectedID) {
+    if (!selectedID) {
         console.log('no id');
         return;
     }
@@ -7,13 +8,9 @@ function getData(selectedID) {
         console.log(`get data and build plot for ${selectedID}`)
         console.log(data);
 
-         // .filter data.samples for the selectedID
-        // 14.2..9
-// function filterSelected(id) {
-//     return id.names == 1;
-// };
-    var filtered = data.samples.filter(row => row.id === selectedID);
-    console.log(filtered);
+        // filter the selected data based on dropdown selection
+        var filtered = data.samples.filter(row => row.id === selectedID);
+        console.log(filtered);
 
         var values = [];
         var ids = [];
@@ -24,18 +21,11 @@ function getData(selectedID) {
             ids = element.otu_ids;
             labels = element.otu_labels;
         });
-        // values = filtered.sample_values;
-        // ids = filtered.otu_ids;
-        // labels = filtered.otu_labels
 
-        // var values = data.samples[0].sample_values;
-        // var ids = data.samples[0].otu_ids;
-        // var labels = data.samples[0].otu_labels;
-
+        // call the functions for plotting charts
         buildPlot(values, ids, labels);
         console.log(values, ids, labels);
-        // buildTable(values,ids,labels);
-        buildBubble(values,ids,labels);
+        buildBubble(values, ids, labels);
 
     });
 };
@@ -44,115 +34,86 @@ getData();
 
 
 
-// function buildTable(values,ids,labels) {
-//     var table = d3.select("#summary-table");
-//     var tbody = table.select("tbody");
-//     var trow;
-//     for (var j=0; j<10; j++) {
-//         trow = tbody.append("tr");
-//         trow.append("td").text(ids[j]);
-//         trow.append("td").text(labels[j]);
-//         trow.append("td").text(values[j]);
-//     }
-// }
+// function to filter metadata from dataset and display demographic info
 
 function buildTable(selectedID) {
-          
-    
+
+
     d3.json("samples.json").then((data1) => {
         console.log(`get data and build table for ${selectedID}`)
         // console.log(data);
 
-    var filtered1 = data1.metadata.filter(row => row.id === Number(selectedID));
-    console.log(filtered1);
+        var filtered1 = data1.metadata.filter(row => row.id === Number(selectedID));
+        console.log(filtered1);
 
-    var table;
-    // table.html("");
-    table = d3.select("#summary-table");
-    // var tbody = table.select("tbody");
-    // var row = tbody.append("tr");
-    
-    // Object.entries(filtered1[0]).forEach(function([key,value]){
-    //     console.log(key,value);
-    //     var cell = row.append("td").text(filtered1[0]);
-    //     cell.text(key);
-    //     cell.text(value);
+        var table;
+        // select summary table from html
+        table = d3.select("#summary-table");
+        // clear values prior to load
         table.html("");
+        // populate and append values filtered to html
         Object.entries(filtered1[0]).forEach((key) => {
-            table.append("tr").text(key[0] + ":" + key [1] + "\n");
-            
-            });
-           
+            table.append("tr").text(key[0] + ":" + key[1] + "\n");
+
+        });
+
     });
-    
-    };
-    
+
+};
 
 
-
-//     function buildTable(values,ids,labels) {
-//     var tbody = d3.select("tbody");
-//     var row = tbody.append("tr");
-
-//     Object.entries(values,ids,labels).forEach(function([key,value]){
-//         console.log(key,value);
-//         var cell = row.append("td");
-//         cell.text(value);
-//     });
-// };
 
 // Bar chart
 function buildPlot(values, ids, labels) {
-    // .slice() 15.2..6
-    // var topTen = top.names.slice(0,10);
-    // console.log(topTen);
+    // format the ytick to concatenate the "OTU" + id
     var yticks = ids.slice(0, 10).map(otuID => `OTU ${otuID}`).reverse();
     var trace1 = {
-        x: values.slice(0,10).reverse(),
+        x: values.slice(0, 10).reverse(),
         y: yticks,
         type: "bar",
         text: labels,
         orientation: "h",
-       
+
     };
-  
+
     var data1 = [trace1];
 
     var layout1 = {
         title: "Sample Values by IDs",
-        xaxis: { title: "Sample Values"},
-        yaxis: { title: "IDs", side: "left" },
+        xaxis: { title: "Sample Values" },
+
 
     };
- 
+
     Plotly.newPlot("bar", data1, layout1);
 };
-// Bubble chart
-function buildBubble(values,ids,labels) {
-    var trace2 = {
-            x: ids,
-            y: values,
-            mode: 'markers',
-            marker: {
-              color: ids,
-              size: values,
-              text: labels,
-            }
-          };
-          
-          var data2 = [trace2];
-          
-          var layout = {
-            title: 'Biodiversity Size and Color',
-            showlegend: false,
-            height: 600,
-            width: 1200,
-            xaxis: { title: "IDs" },
-          };
-          
-          Plotly.newPlot('bubble', data2, layout);
 
-    }
+// Bubble chart
+function buildBubble(values, ids, labels) {
+    var trace2 = {
+        x: ids,
+        y: values,
+        mode: 'markers',
+        marker: {
+            color: ids,
+            size: values,
+            text: labels,
+        }
+    };
+
+    var data2 = [trace2];
+
+    var layout = {
+        title: 'Biodiversity Sample Values by IDs',
+        showlegend: false,
+        height: 600,
+        width: 1200,
+        xaxis: { title: "OTU ID" },
+    };
+
+    Plotly.newPlot('bubble', data2, layout);
+
+}
 
 
 // update drop down menu
@@ -179,7 +140,7 @@ updateDropDown();
 function optionChanged(selectedID) {
     // run this code whendropdown changes
     console.log(`option changed for ${selectedID}`)
-    
+
     // get data for selected option
     getData(selectedID);
     buildTable(selectedID);
